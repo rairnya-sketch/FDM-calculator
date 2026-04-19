@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrintCost FDM Sync</title>
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{--text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);--text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);--text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-text:#28251d;--color-text-muted:#6d6b65;--color-text-faint:#9c9a95;--color-text-inverse:#f9f8f4;--color-primary:#01696f;--color-warning:#964219;--color-purple:#7a39bb;--color-blue:#006494;--radius-md:.9rem;--radius-lg:1.1rem;--radius-xl:1.4rem;--shadow-md:0 12px 28px rgba(0,0,0,.08);--shadow-lg:0 18px 40px rgba(1,105,111,.18);--font-body:'Satoshi',Inter,sans-serif}
+    [data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#22211f;--color-text:#eceae6;--color-text-muted:#b1aea8;--color-text-faint:#7c7972;--color-text-inverse:#171614;--color-primary:#4f98a3;--color-warning:#d28a5b;--color-purple:#b58cff;--color-blue:#7bb6e7;--shadow-md:0 12px 28px rgba(0,0,0,.28);--shadow-lg:0 18px 42px rgba(79,152,163,.2)}
+    *,*::before,*::after{box-sizing:border-box} html,body{margin:0} body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);line-height:1.5;color:var(--color-text);background:radial-gradient(circle at top right,color-mix(in srgb,var(--color-primary) 14%,transparent),transparent 28%),var(--color-bg)} button,input,select{font:inherit;color:inherit} button{cursor:pointer;border:none}
+    .app{max-width:1380px;margin:0 auto;padding:var(--space-6)} .topbar,.actions,.line-actions,.profile-row,.nav-row{display:flex;gap:var(--space-3);flex-wrap:wrap} .topbar{justify-content:space-between;align-items:center;margin-bottom:var(--space-8)} .brand{display:flex;align-items:center;gap:var(--space-3)} .logo{width:42px;height:42px;color:var(--color-primary)} .brand-title{font-size:var(--text-lg);font-weight:900}.brand-sub{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .panel{background:color-mix(in srgb,var(--color-surface) 92%,transparent);backdrop-filter:blur(18px);border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);border-radius:var(--radius-xl);box-shadow:var(--shadow-md)} .hero,.summary-section{display:grid;grid-template-columns:1fr;gap:var(--space-6);margin-bottom:var(--space-6)} .hero-copy,.summary,.card{padding:var(--space-6)} h1{font-size:var(--text-xl);line-height:1.05;letter-spacing:-.04em;margin:0} .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-4)} .kpi{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-2);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)} .kpi-label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-faint);margin-bottom:var(--space-2)} .kpi-value{font-size:var(--text-lg);font-weight:900;font-variant-numeric:tabular-nums lining-nums}.kpi-note{font-size:var(--text-sm);color:var(--color-text-muted)}
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:var(--space-6)} .stack{display:grid;gap:var(--space-6)} .section-title{font-size:var(--text-lg);font-weight:800;margin:0 0 var(--space-2)} .section-desc{color:var(--color-text-muted);font-size:var(--text-sm);margin:0 0 var(--space-5)} .card{display:flex;flex-direction:column;gap:var(--space-5)}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)} .field{display:flex;flex-direction:column;gap:var(--space-2)} .field.full{grid-column:1/-1} label{font-size:var(--text-sm);font-weight:700} input,select{width:100%;min-height:48px;border-radius:var(--radius-md);border:1px solid color-mix(in srgb,var(--color-text) 12%,transparent);background:var(--color-surface-2);padding:0 var(--space-4);outline:none} input:focus,select:focus{border-color:var(--color-primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--color-primary) 20%,transparent)}
+    .btn,.theme-toggle,.nav-btn{min-height:48px;padding:0 var(--space-5);border-radius:999px;border:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);background:var(--color-surface-offset);font-weight:700} .btn:hover,.theme-toggle:hover,.nav-btn:hover{transform:translateY(-1px)} .btn-primary,.btn-spotlight,.nav-btn.active{background:linear-gradient(135deg,var(--color-primary),color-mix(in srgb,var(--color-primary) 70%,white));color:var(--color-text-inverse);border-color:transparent;box-shadow:var(--shadow-lg)} .btn-spotlight{position:relative;isolation:isolate} .btn-spotlight::after{content:'';position:absolute;inset:-2px;border-radius:inherit;background:linear-gradient(135deg,color-mix(in srgb,var(--color-primary) 55%,white),transparent 65%);opacity:.28;z-index:-1;filter:blur(10px);pointer-events:none}
+    .parts-table,.history-list{display:grid;gap:var(--space-3)} .part-item,.history-item,.profile-box,.sync-box,.profile-screen{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-offset);border:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)} .part-top,.history-top,.row{display:flex;justify-content:space-between;gap:var(--space-4);align-items:flex-start} .row{padding:var(--space-3) 0;border-bottom:1px solid color-mix(in srgb,var(--color-text) 10%,transparent)} .row:last-child{border-bottom:none} .mono{font-variant-numeric:tabular-nums lining-nums}
+    .total{padding-top:var(--space-4);margin-top:var(--space-3);border-top:2px solid color-mix(in srgb,var(--color-primary) 28%,transparent)} .total .label{font-size:var(--text-sm);color:var(--color-text-muted)} .total .value{font-size:clamp(2rem,1.4rem + 2vw,3rem);font-weight:900;letter-spacing:-.04em} .empty{padding:var(--space-6);border-radius:var(--radius-lg);text-align:center;color:var(--color-text-muted);background:var(--color-surface-offset)}
+    .calc-box{padding:var(--space-4);border-radius:var(--radius-lg);background:var(--color-surface-offset);display:grid;gap:var(--space-3)} .muted{color:var(--color-text-muted)} .small{font-size:var(--text-sm)} .ok{color:#7ad38c}.warn{color:#ffbf75}
+    .mini-chart{height:10px;border-radius:999px;background:var(--color-surface-offset);overflow:hidden;display:flex;margin-top:var(--space-5)} .seg{height:100%}.seg.material{background:var(--color-primary)} .seg.energy{background:var(--color-warning)} .seg.machine{background:var(--color-purple)} .seg.failure{background:#7fbf7f} .seg.margin{background:var(--color-blue)}
+    .view{display:none}.view.active{display:block}.profile-wrap{max-width:720px;margin:0 auto}.profile-screen{padding:var(--space-6)}
+    @media (max-width:1024px){.layout,.form-grid,.summary-grid{grid-template-columns:1fr 1fr}.app{padding:var(--space-4)}} @media (max-width:760px){.layout,.form-grid,.summary-grid{grid-template-columns:1fr}.hero-copy,.summary,.card,.profile-screen{padding:var(--space-5)}h1{max-width:none}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 64 64" fill="none" aria-label="Логотип PrintCost"><path d="M12 18 32 8l20 10v28L32 56 12 46V18Z" stroke="currentColor" stroke-width="3"/><path d="M32 8v48M12 18l20 10 20-10M12 46l20-10 20 10" stroke="currentColor" stroke-width="3"/></svg>
+        <div><div class="brand-title">PrintCost FDM</div><div class="brand-sub">Firebase-синхронизация для GitHub Pages</div></div>
+      </div>
+      <div class="nav-row">
+        <button class="nav-btn active" data-view-target="appView" type="button">Калькулятор</button>
+        <button class="nav-btn" data-view-target="profileView" type="button">Профиль</button>
+        <button class="theme-toggle" data-theme-toggle aria-label="Переключить тему" type="button">◐</button>
+      </div>
+    </header>
+
+    <section id="profileView" class="view">
+      <div class="profile-wrap">
+        <div class="panel profile-screen">
+          <h1 style="margin-bottom:var(--space-4)">Профиль пользователя</h1>
+          <p class="section-desc">Здесь выбирается отдельный профиль для синхронизации между устройствами.</p>
+          <div class="profile-box">
+            <div class="section-title">Подключение профиля</div>
+            <p class="section-desc">Введи одинаковое имя профиля на всех устройствах, затем нажми кнопку подключения.</p>
+            <div class="profile-row">
+              <input id="profileName" type="text" placeholder="Например: virk" />
+              <button class="btn btn-primary btn-spotlight" type="button" id="applyProfile">Подключить профиль</button>
+            </div>
+            <div class="muted" id="activeProfileLabel">Активный профиль: guest</div>
+          </div>
+          <div class="sync-box" style="margin-top:var(--space-4)">
+            <div class="section-title">Статус синхронизации</div>
+            <div class="small" id="syncStatus">Статус: Firebase не настроен</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main id="appView" class="view active">
+      <section class="hero">
+        <div class="panel hero-copy">
+          <h1>Калькулятор стоимости FDM-модели</h1>
+        </div>
+      </section>
+
+      <section class="layout">
+        <section class="panel card">
+          <div>
+            <h2 class="section-title">Расчёт детали</h2>
+            <p class="section-desc">Основные кнопки подсчёта и сохранения специально выделены визуально.</p>
+          </div>
+
+          <form id="calcForm" class="form-grid">
+            <div class="field full"><label for="partName">Название детали</label><input id="partName" type="text" value="Деталь 1"></div>
+            <div class="field"><label for="materialType">Материал</label><select id="materialType"><option value="PLA">PLA</option><option value="PETG">PETG</option><option value="ASA">ASA</option><option value="ABS">ABS</option><option value="CUSTOM">Свой материал</option></select></div>
+            <div class="field"><label for="currency">Валюта</label><select id="currency"><option value="₽">₽</option><option value="$">$</option><option value="€">€</option></select></div>
+            <div class="field"><label for="weight">Вес детали, г</label><input id="weight" type="number" min="0" step="0.1" value="82"></div>
+            <div class="field"><label for="spoolPrice">Цена катушки</label><input id="spoolPrice" type="number" min="0" step="0.01" value="1800"></div>
+            <div class="field"><label for="spoolWeight">Вес катушки, г</label><input id="spoolWeight" type="number" min="1" step="1" value="1000"></div>
+            <div class="field"><label for="printHours">Время печати, ч</label><input id="printHours" type="number" min="0" step="0.1" value="5.6"></div>
+            <div class="field"><label for="powerWatts">Средняя мощность принтера, Вт</label><input id="powerWatts" type="number" min="0" step="1" value="200"></div>
+            <div class="field"><label for="electricityRate">Тариф за кВт·ч</label><input id="electricityRate" type="number" min="0" step="0.01" value="4.65"></div>
+            <div class="field"><label for="machineRate">Амортизация принтера в час</label><input id="machineRate" type="number" min="0" step="0.01" value="10"></div>
+            <div class="field"><label for="failureRate">Риск брака, %</label><input id="failureRate" type="number" min="0" max="100" step="1" value="8"></div>
+            <div class="field"><label for="markup">Наценка, %</label><input id="markup" type="number" min="0" step="1" value="35"></div>
+            <div class="field full actions">
+              <button class="btn btn-primary btn-spotlight" type="button" id="addPart">Добавить деталь в модель</button>
+              <button class="btn btn-primary btn-spotlight" type="button" id="saveToHistory">Сохранить в историю</button>
+            </div>
+          </form>
+
+          <div>
+            <h3 class="section-title">Разбивка текущей детали</h3>
+            <div class="row"><span>Материал</span><strong class="mono" id="materialCost">0 ₽</strong></div>
+            <div class="row"><span>Электричество</span><strong class="mono" id="energyCost">0 ₽</strong></div>
+            <div class="row"><span>Износ принтера</span><strong class="mono" id="machineCost">0 ₽</strong></div>
+            <div class="row"><span>Запас на брак</span><strong class="mono" id="failureCost">0 ₽</strong></div>
+            <div class="row"><span>Прибыль</span><strong class="mono" id="profitCost">0 ₽</strong></div>
+            <div class="total"><div class="label">Итоговая цена детали</div><div class="value mono" id="finalPrice">0 ₽</div></div>
+            <div class="mini-chart" aria-hidden="true"><div class="seg material" id="barMaterial" style="width:0%"></div><div class="seg energy" id="barEnergy" style="width:0%"></div><div class="seg machine" id="barMachine" style="width:0%"></div><div class="seg failure" id="barFailure" style="width:0%"></div><div class="seg margin" id="barMargin" style="width:0%"></div></div>
+          </div>
+        </section>
+
+        <section class="stack">
+          <aside class="panel card">
+            <div>
+              <h2 class="section-title">Детали модели</h2>
+              <p class="section-desc">Список деталей синхронизируется между устройствами для одного профиля.</p>
+            </div>
+            <div class="parts-table" id="partsList"><div class="empty">Пока нет добавленных деталей.</div></div>
+            <div class="calc-box">
+              <button class="btn btn-primary btn-spotlight" type="button" id="calcModelBtn">Подсчитать стоимость деталей</button>
+              <div class="row"><span>Себестоимость модели</span><strong class="mono" id="partsBaseInline">0 ₽</strong></div>
+              <div class="row"><span>Итоговая цена модели</span><strong class="mono" id="partsFinalInline">0 ₽</strong></div>
+            </div>
+            <div class="line-actions"><button class="btn" type="button" id="clearParts">Очистить детали</button></div>
+          </aside>
+
+          <aside class="panel card">
+            <div>
+              <h2 class="section-title">История ввода</h2>
+              <p class="section-desc">История расчётов хранится в Firebase и загружается снова после обновления страницы, если выбран тот же профиль. Firebase Realtime Database позволяет читать и записывать данные на вебе по одному и тому же пути профиля. [web:225][web:232]</p>
+            </div>
+            <div class="history-list" id="historyList"><div class="empty">История пока пустая.</div></div>
+            <div class="line-actions"><button class="btn" type="button" id="clearHistory">Очистить историю</button></div>
+          </aside>
+        </section>
+      </section>
+
+      <section class="summary-section">
+        <aside class="panel summary">
+          <div class="section-title">Быстрый итог модели</div>
+          <p class="section-desc">Общий итог вынесен ниже основного блока расчёта и деталей, чтобы сначала работать с формой, а затем смотреть сводку. [web:271][web:279]</p>
+          <div class="summary-grid">
+            <div class="kpi"><div class="kpi-label">Всего деталей</div><div class="kpi-value mono" id="partsCount">0</div><div class="kpi-note">В текущей модели</div></div>
+            <div class="kpi"><div class="kpi-label">Себестоимость</div><div class="kpi-value mono" id="modelBase">0 ₽</div><div class="kpi-note">После подсчёта деталей</div></div>
+            <div class="kpi"><div class="kpi-label">Цена продажи</div><div class="kpi-value mono" id="modelFinal">0 ₽</div><div class="kpi-note">Сумма добавленных деталей</div></div>
+            <div class="kpi"><div class="kpi-label">Вес общий</div><div class="kpi-value mono" id="modelWeight">0 г</div><div class="kpi-note">Суммарный вес</div></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getDatabase, ref, get, set } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+    const $ = id => document.getElementById(id);
+    const LOCAL_KEY = 'printcost-fdm-firebase-last-profile';
+    const state = { parts:[], history:[], current:null, profile:'guest', db:null, firebaseReady:false };
+    const materialPresets = { PLA:{spoolPrice:1800,spoolWeight:1000}, PETG:{spoolPrice:2100,spoolWeight:1000}, ASA:{spoolPrice:2600,spoolWeight:1000}, ABS:{spoolPrice:2300,spoolWeight:1000} };
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBfREJ5u-rRjPKgDjwOFolppN9HTBApKuI",
+      authDomain: "d-model-calculator.firebaseapp.com",
+      databaseURL: "https://d-model-calculator-default-rtdb.firebaseio.com",
+      projectId: "d-model-calculator",
+      storageBucket: "d-model-calculator.firebasestorage.app",
+      messagingSenderId: "27945549498",
+      appId: "1:27945549498:web:c4550378f4249adc624c83"
+    };
+
+    function getSavedProfile(){ try { return localStorage.getItem(LOCAL_KEY) || 'guest'; } catch(e){ return 'guest'; } }
+    function saveProfile(profile){ try { localStorage.setItem(LOCAL_KEY, profile); } catch(e){} }
+    function fmtCur(v,c){ return `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(v)} ${c}`; }
+    function num(id){ return parseFloat($(id).value) || 0; }
+    function val(id){ return $(id).value; }
+    function pct(part,total){ return total > 0 ? Math.max(0,(part / total) * 100) : 0; }
+    function normalizeProfileName(name){ return (name || 'guest').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-zа-яё0-9_-]/gi,'') || 'guest'; }
+    function dbPath(profile){ return `profiles/${profile}`; }
+    function setSyncStatus(text, ok = false){ const el = $('syncStatus'); el.textContent = `Статус: ${text}`; el.className = ok ? 'small ok' : 'small warn'; }
+
+    function switchView(id){
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      $(id).classList.add('active');
+      document.querySelectorAll('[data-view-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.viewTarget === id));
+    }
+
+    function calculate(){
+      const weight = num('weight');
+      const spoolPrice = num('spoolPrice');
+      const spoolWeight = Math.max(num('spoolWeight'),1);
+      const printHours = num('printHours');
+      const powerWatts = num('powerWatts');
+      const electricityRate = num('electricityRate');
+      const machineRate = num('machineRate');
+      const failureRate = num('failureRate') / 100;
+      const markup = num('markup') / 100;
+      const materialCost = weight * (spoolPrice / spoolWeight);
+      const energyCost = (powerWatts / 1000) * printHours * electricityRate;
+      const machineCost = printHours * machineRate;
+      const subtotal = materialCost + energyCost + machineCost;
+      const failureCost = subtotal * failureRate;
+      const baseCost = subtotal + failureCost;
+      const profit = baseCost * markup;
+      const finalPrice = baseCost + profit;
+      const vizTotal = Math.max(finalPrice,1);
+      const currency = val('currency');
+
+      state.current = { id:Date.now(), name:val('partName').trim() || `Деталь ${state.parts.length + 1}`, material:val('materialType'), currency, weight, printHours, spoolPrice, spoolWeight, powerWatts, electricityRate, machineRate, failureRate:num('failureRate'), markup:num('markup'), materialCost, energyCost, machineCost, failureCost, baseCost, profit, finalPrice };
+
+      $('materialCost').textContent = fmtCur(materialCost,currency);
+      $('energyCost').textContent = fmtCur(energyCost,currency);
+      $('machineCost').textContent = fmtCur(machineCost,currency);
+      $('failureCost').textContent = fmtCur(failureCost,currency);
+      $('profitCost').textContent = fmtCur(profit,currency);
+      $('finalPrice').textContent = fmtCur(finalPrice,currency);
+      $('barMaterial').style.width = `${pct(materialCost,vizTotal)}%`;
+      $('barEnergy').style.width = `${pct(energyCost,vizTotal)}%`;
+      $('barMachine').style.width = `${pct(machineCost,vizTotal)}%`;
+      $('barFailure').style.width = `${pct(failureCost,vizTotal)}%`;
+      $('barMargin').style.width = `${pct(profit,vizTotal)}%`;
+    }
+
+    function renderParts(){
+      const wrap = $('partsList');
+      if(!state.parts.length){ wrap.innerHTML = '<div class="empty">Пока нет добавленных деталей.</div>'; $('partsCount').textContent = 0; return; }
+      wrap.innerHTML = state.parts.map((item,index) => `
+        <div class="part-item">
+          <div class="part-top"><div><strong>${item.name}</strong><div class="muted">${item.material} · ${item.weight} г · ${item.printHours} ч</div></div><strong class="mono">${fmtCur(item.finalPrice,item.currency)}</strong></div>
+          <div class="line-actions"><button class="btn" type="button" data-remove-part="${index}">Удалить</button></div>
+        </div>
+      `).join('');
+      $('partsCount').textContent = state.parts.length;
+    }
+
+    function renderHistory(){
+      const wrap = $('historyList');
+      if(!state.history.length){ wrap.innerHTML = '<div class="empty">История пока пустая.</div>'; return; }
+      wrap.innerHTML = state.history.map((item,index) => `
+        <div class="history-item">
+          <div class="history-top"><div><strong>${item.name}</strong><div class="muted">${item.material} · ${item.weight} г · ${item.printHours} ч</div></div><strong class="mono">${fmtCur(item.finalPrice,item.currency)}</strong></div>
+          <div class="line-actions"><button class="btn" type="button" data-load-history="${index}">Подставить</button><button class="btn" type="button" data-remove-history="${index}">Удалить</button></div>
+        </div>
+      `).join('');
+    }
+
+    function calculateModelTotals(){
+      const count = state.parts.length;
+      const base = state.parts.reduce((s,p) => s + p.baseCost, 0);
+      const final = state.parts.reduce((s,p) => s + p.finalPrice, 0);
+      const weight = state.parts.reduce((s,p) => s + p.weight, 0);
+      const currency = state.parts[0]?.currency || val('currency');
+      $('partsCount').textContent = count;
+      $('modelBase').textContent = fmtCur(base, currency);
+      $('modelFinal').textContent = fmtCur(final, currency);
+      $('modelWeight').textContent = `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(weight)} г`;
+      $('partsBaseInline').textContent = fmtCur(base, currency);
+      $('partsFinalInline').textContent = fmtCur(final, currency);
+    }
+
+    function fillForm(data){
+      $('partName').value = data.name;
+      $('materialType').value = data.material;
+      $('currency').value = data.currency;
+      $('weight').value = data.weight;
+      $('spoolPrice').value = data.spoolPrice;
+      $('spoolWeight').value = data.spoolWeight;
+      $('printHours').value = data.printHours;
+      $('powerWatts').value = data.powerWatts;
+      $('electricityRate').value = data.electricityRate;
+      $('machineRate').value = data.machineRate;
+      $('failureRate').value = data.failureRate;
+      $('markup').value = data.markup;
+      calculate();
+    }
+
+    async function pushProfile(){
+      if(!state.firebaseReady || !state.db) return;
+      await set(ref(state.db, dbPath(state.profile)), { parts: state.parts, history: state.history, updatedAt: Date.now() });
+      setSyncStatus(`синхронизировано для профиля ${state.profile}`, true);
+    }
+
+    async function pullProfile(profile){
+      if(!state.firebaseReady || !state.db) return;
+      const snapshot = await get(ref(state.db, dbPath(profile)));
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        state.parts = Array.isArray(data.parts) ? data.parts : [];
+        state.history = Array.isArray(data.history) ? data.history : [];
+      } else {
+        state.parts = [];
+        state.history = [];
+        await pushProfile();
+      }
+      renderParts();
+      renderHistory();
+      calculateModelTotals();
+    }
+
+    $('calcForm').addEventListener('submit', e => e.preventDefault());
+    document.querySelectorAll('input,select').forEach(el => el.addEventListener('input', calculate));
+
+    $('materialType').addEventListener('change', e => {
+      const preset = materialPresets[e.target.value];
+      if(preset){ $('spoolPrice').value = preset.spoolPrice; $('spoolWeight').value = preset.spoolWeight; }
+      calculate();
+    });
+
+    $('addPart').addEventListener('click', async () => {
+      calculate();
+      state.parts.push({...state.current, id:Date.now() + Math.random()});
+      renderParts();
+      calculateModelTotals();
+      $('partName').value = `Деталь ${state.parts.length + 1}`;
+      calculate();
+      await pushProfile();
+    });
+
+    $('saveToHistory').addEventListener('click', async () => {
+      calculate();
+      state.history.unshift({...state.current});
+      state.history = state.history.slice(0,20);
+      renderHistory();
+      await pushProfile();
+    });
+
+    $('calcModelBtn').addEventListener('click', calculateModelTotals);
+    $('clearParts').addEventListener('click', async () => { state.parts = []; renderParts(); calculateModelTotals(); await pushProfile(); });
+    $('clearHistory').addEventListener('click', async () => { state.history = []; renderHistory(); await pushProfile(); });
+
+    $('applyProfile').addEventListener('click', async () => {
+      const profile = normalizeProfileName($('profileName').value);
+      state.profile = profile;
+      saveProfile(profile);
+      $('activeProfileLabel').textContent = `Активный профиль: ${profile}`;
+      await pullProfile(profile);
+      switchView('appView');
+    });
+
+    $('partsList').addEventListener('click', async e => {
+      const btn = e.target.closest('[data-remove-part]');
+      if(!btn) return;
+      const index = Number(btn.dataset.removePart);
+      state.parts.splice(index,1);
+      renderParts();
+      calculateModelTotals();
+      await pushProfile();
+    });
+
+    $('historyList').addEventListener('click', async e => {
+      const loadBtn = e.target.closest('[data-load-history]');
+      if(loadBtn){
+        const index = Number(loadBtn.dataset.loadHistory);
+        const item = state.history[index];
+        if(item) fillForm(item);
+        switchView('appView');
+        return;
+      }
+      const removeBtn = e.target.closest('[data-remove-history]');
+      if(removeBtn){
+        const index = Number(removeBtn.dataset.removeHistory);
+        state.history.splice(index,1);
+        renderHistory();
+        await pushProfile();
+      }
+    });
+
+    document.querySelectorAll('[data-view-target]').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.viewTarget)));
+
+    (function(){
+      const t=document.querySelector('[data-theme-toggle]');
+      const r=document.documentElement;
+      let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+      r.setAttribute('data-theme',d);
+      t.addEventListener('click',()=>{ d=d==='dark'?'light':'dark'; r.setAttribute('data-theme',d); });
+    })();
+
+    calculate();
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      state.db = getDatabase(app);
+      state.firebaseReady = true;
+      setSyncStatus('Firebase подключён', true);
+
+      const initialProfile = normalizeProfileName(getSavedProfile());
+      state.profile = initialProfile;
+      $('profileName').value = initialProfile === 'guest' ? '' : initialProfile;
+      $('activeProfileLabel').textContent = `Активный профиль: ${initialProfile}`;
+
+      pullProfile(initialProfile).catch(err => {
+        console.error(err);
+        setSyncStatus('не удалось загрузить профиль');
+      });
+    } catch (e) {
+      console.error(e);
+      setSyncStatus('ошибка Firebase, проверь config и databaseURL');
+    }
+  </script>
+</body>
+</html>
