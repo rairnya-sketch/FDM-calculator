@@ -46,7 +46,7 @@
             <div class="section-title">Подключение профиля</div>
             <p class="section-desc">Введи одинаковое имя профиля на всех устройствах, затем нажми кнопку подключения.</p>
             <div class="profile-row">
-              <input id="profileName" type="text" placeholder="Например: user228" />
+              <input id="profileName" type="text" placeholder="Например: virk" />
               <button class="btn btn-primary btn-spotlight" type="button" id="applyProfile">Подключить профиль</button>
             </div>
             <div class="muted" id="activeProfileLabel">Активный профиль: guest</div>
@@ -108,11 +108,12 @@
           <aside class="panel card">
             <div>
               <h2 class="section-title">Детали модели</h2>
-              <p class="section-desc">Список деталей синхронизируется между устройствами для одного профиля.</p>
+              <p class="section-desc">Добавляй сюда все части модели, чтобы видеть общий расчёт и суммарный вес.</p>
             </div>
             <div class="parts-table" id="partsList"><div class="empty">Пока нет добавленных деталей.</div></div>
             <div class="calc-box">
               <button class="btn btn-primary btn-spotlight" type="button" id="calcModelBtn">Подсчитать стоимость деталей</button>
+              <div class="row"><span>Общий вес модели</span><strong class="mono" id="partsWeightInline">0 г</strong></div>
               <div class="row"><span>Себестоимость модели</span><strong class="mono" id="partsBaseInline">0 ₽</strong></div>
               <div class="row"><span>Итоговая цена модели</span><strong class="mono" id="partsFinalInline">0 ₽</strong></div>
             </div>
@@ -122,7 +123,7 @@
           <aside class="panel card">
             <div>
               <h2 class="section-title">История ввода</h2>
-              <p class="section-desc">История расчётов хранится в Firebase и загружается снова после обновления страницы, если выбран тот же профиль. Firebase Realtime Database позволяет читать и записывать данные на вебе по одному и тому же пути профиля. [web:225][web:232]</p>
+              
             </div>
             <div class="history-list" id="historyList"><div class="empty">История пока пустая.</div></div>
             <div class="line-actions"><button class="btn" type="button" id="clearHistory">Очистить историю</button></div>
@@ -130,19 +131,7 @@
         </section>
       </section>
 
-      <section class="summary-section">
-        <aside class="panel summary">
-          <div class="section-title">Быстрый итог модели</div>
-          <p class="section-desc">Общий итог вынесен ниже основного блока расчёта и деталей, чтобы сначала работать с формой, а затем смотреть сводку. [web:271][web:279]</p>
-          <div class="summary-grid">
-            <div class="kpi"><div class="kpi-label">Всего деталей</div><div class="kpi-value mono" id="partsCount">0</div><div class="kpi-note">В текущей модели</div></div>
-            <div class="kpi"><div class="kpi-label">Себестоимость</div><div class="kpi-value mono" id="modelBase">0 ₽</div><div class="kpi-note">После подсчёта деталей</div></div>
-            <div class="kpi"><div class="kpi-label">Цена продажи</div><div class="kpi-value mono" id="modelFinal">0 ₽</div><div class="kpi-note">Сумма добавленных деталей</div></div>
-            <div class="kpi"><div class="kpi-label">Вес общий</div><div class="kpi-value mono" id="modelWeight">0 г</div><div class="kpi-note">Суммарный вес</div></div>
-          </div>
-        </aside>
-      </section>
-    </main>
+          </main></main>
   </div>
 
   <script type="module">
@@ -246,11 +235,9 @@
       const weight = state.parts.reduce((s,p) => s + p.weight, 0);
       const currency = state.parts[0]?.currency || val('currency');
       $('partsCount').textContent = count;
-      $('modelBase').textContent = fmtCur(base, currency);
-      $('modelFinal').textContent = fmtCur(final, currency);
-      $('modelWeight').textContent = `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(weight)} г`;
-      $('partsBaseInline').textContent = fmtCur(base, currency);
-      $('partsFinalInline').textContent = fmtCur(final, currency);
+      if ($('partsWeightInline')) $('partsWeightInline').textContent = `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(weight)} г`;
+      if ($('partsBaseInline')) $('partsBaseInline').textContent = fmtCur(base, currency);
+      if ($('partsFinalInline')) $('partsFinalInline').textContent = fmtCur(final, currency);
     }
 
     function fillForm(data){
