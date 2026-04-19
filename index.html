@@ -112,8 +112,7 @@
             </div>
             <div class="parts-table" id="partsList"><div class="empty">Пока нет добавленных деталей.</div></div>
             <div class="calc-box">
-              <button class="btn btn-primary btn-spotlight" type="button" id="calcModelBtn">Подсчитать стоимость деталей</button>
-              <div class="row"><span>Общий вес модели</span><strong class="mono" id="partsWeightInline">0 г</strong></div>
+<div class="row"><span>Общий вес модели</span><strong class="mono" id="partsWeightInline">0 г</strong></div>
               <div class="row"><span>Себестоимость модели</span><strong class="mono" id="partsBaseInline">0 ₽</strong></div>
               <div class="row"><span>Итоговая цена модели</span><strong class="mono" id="partsFinalInline">0 ₽</strong></div>
             </div>
@@ -207,14 +206,14 @@
 
     function renderParts(){
       const wrap = $('partsList');
-      if(!state.parts.length){ wrap.innerHTML = '<div class="empty">Пока нет добавленных деталей.</div>'; $('partsCount').textContent = 0; return; }
+      if(!state.parts.length){ wrap.innerHTML = '<div class="empty">Пока нет добавленных деталей.</div>'; if ($('partsWeightInline')) {$('partsWeightInline').textContent='0 г';} return; }
       wrap.innerHTML = state.parts.map((item,index) => `
         <div class="part-item">
           <div class="part-top"><div><strong>${item.name}</strong><div class="muted">${item.material} · ${item.weight} г · ${item.printHours} ч</div></div><strong class="mono">${fmtCur(item.finalPrice,item.currency)}</strong></div>
           <div class="line-actions"><button class="btn" type="button" data-remove-part="${index}">Удалить</button></div>
         </div>
       `).join('');
-      $('partsCount').textContent = state.parts.length;
+      calculateModelTotals();
     }
 
     function renderHistory(){
@@ -229,12 +228,15 @@
     }
 
     function calculateModelTotals(){
-      const count = state.parts.length;
-      const base = state.parts.reduce((s,p) => s + p.baseCost, 0);
-      const final = state.parts.reduce((s,p) => s + p.finalPrice, 0);
-      const weight = state.parts.reduce((s,p) => s + p.weight, 0);
-      const currency = state.parts[0]?.currency || val('currency');
-      $('partsCount').textContent = count;
+      let base = state.parts.reduce((s,p)=>s+p.baseCost,0);
+      let final = state.parts.reduce((s,p)=>s+p.finalPrice,0);
+      let weight = state.parts.reduce((s,p)=>s+p.weight,0);
+      if(state.current){
+        base += state.current.baseCost;
+        final += state.current.finalPrice;
+        weight += state.current.weight;
+      }
+      const currency = state.current?.currency || state.parts[0]?.currency || val('currency');
       if ($('partsWeightInline')) $('partsWeightInline').textContent = `${new Intl.NumberFormat('ru-RU',{maximumFractionDigits:1}).format(weight)} г`;
       if ($('partsBaseInline')) $('partsBaseInline').textContent = fmtCur(base, currency);
       if ($('partsFinalInline')) $('partsFinalInline').textContent = fmtCur(final, currency);
@@ -280,7 +282,12 @@
     }
 
     $('calcForm').addEventListener('submit', e => e.preventDefault());
-    document.querySelectorAll('input,select').forEach(el => el.addEventListener('input', calculate));
+    document.querySelectorAll('input,select').forEach(el => 
+      el.addEventListener('input', () => {
+        calculate(); 
+        calculateModelTotals();
+      })
+    );
 
     $('materialType').addEventListener('change', e => {
       const preset = materialPresets[e.target.value];
@@ -306,7 +313,6 @@
       await pushProfile();
     });
 
-    $('calcModelBtn').addEventListener('click', calculateModelTotals);
     $('clearParts').addEventListener('click', async () => { state.parts = []; renderParts(); calculateModelTotals(); await pushProfile(); });
     $('clearHistory').addEventListener('click', async () => { state.history = []; renderHistory(); await pushProfile(); });
 
